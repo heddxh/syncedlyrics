@@ -1,5 +1,6 @@
 import argparse
 import logging
+
 from syncedlyrics import search
 
 
@@ -21,7 +22,9 @@ def cli_handler():
         type=str.lower,
     )
     parser.add_argument(
-        "-l", "--lang", help="Language of the translation along with the lyrics"
+        "-l",
+        "--lang",
+        help="Language of the translation along with the lyrics(set to zh for NetEase will get dual language lyrics)",
     )
     parser.add_argument(
         "-o", "--output", help="Path to save '.lrc' lyrics", default="{search_term}.lrc"

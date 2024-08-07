@@ -10,9 +10,9 @@ lrc_text = syncedlyrics.search("[TRACK_NAME] [ARTIST_NAME]")
 import logging
 from typing import List, Optional
 
-from .providers import Deezer, Lrclib, Musixmatch, NetEase, Megalobiz, Genius
-from .utils import Lyrics, TargetType
+from .providers import Deezer, Genius, Lrclib, Megalobiz, Musixmatch, NetEase
 from .providers.base import LRCProvider
+from .utils import Lyrics, TargetType
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ def search(
     - `synced_only`: Only look for synced lyrics
     - `save_path`: Path to save `.lrc` lyrics. No saving if `None`
     - `providers`: A list of provider names to include in searching; loops over all the providers as soon as an LRC is found
-    - `lang`: Language of the translation along with the lyrics. **Only supported by Musixmatch**
+    - `lang`: Language of the translation along with the lyrics. **Only supported by Musixmatch,**
     - `enhanced`: Returns word by word synced lyrics if available. **Only supported by Musixmatch**
     """
     if plain_only and synced_only:
@@ -54,7 +54,7 @@ def search(
         Musixmatch(lang=lang, enhanced=enhanced),
         Lrclib(),
         # Deezer(),
-        NetEase(),
+        NetEase(need_translation=(lang == "zh")),
         Megalobiz(),
         Genius(),
     ]

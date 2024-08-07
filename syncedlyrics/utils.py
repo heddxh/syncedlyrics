@@ -1,5 +1,6 @@
 """Utility functions for `syncedlyrics` package"""
 
+import logging
 from dataclasses import dataclass
 from bs4 import BeautifulSoup, FeatureNotFound
 import rapidfuzz
@@ -11,6 +12,8 @@ import os
 from pathlib import Path
 
 R_FEAT = re.compile(r"\((feat.+)\)", re.IGNORECASE)
+
+logger = logging.getLogger(__name__)
 
 
 class TargetType(Enum):
@@ -38,6 +41,28 @@ class Lyrics:
             self.synced = other.synced
         if other.unsynced:
             self.unsynced = other.unsynced
+
+    def merge_translation(self, translation: Optional[str]):
+        if not translation:
+            logger.warn("Translation in empty")
+            return
+        trans_type = identify_lyrics_type(translation)
+        if getattr(self, trans_type) is None:
+            logger.warn("Raw lyrics type is not match")
+            return
+
+        untrans_lyric = self.synced if self.synced else self.unsynced
+        result = ""
+        for raw_line in untrans_lyric.splitlines(keepends=True):
+            result += raw_line
+            for trans_line in translation.splitlines(keepends=True):
+                if (
+                    trans_line[: (raw_line.index("]"))]
+                    == raw_line[: raw_line.index("]")]
+                ):
+                    result += trans_line
+
+        setattr(self, trans_type, result)
 
     def is_preferred(self, target_type: TargetType) -> bool:
         return bool(
